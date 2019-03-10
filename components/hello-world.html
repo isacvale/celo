@@ -1,0 +1,29 @@
+<template id = "hello-world">
+  <h1>Hello, World!</h1>
+  <style>
+    h1{
+      background-color: lightgrey;
+      border-radius: 5px;
+      box-shadow: 0 3px 3px 3px darkgrey;
+      color: white;
+      font-family: sans-serif;
+      font-size: 22px;
+      padding: 10px 30px;
+    }
+  </style>
+</template>
+
+<script>
+  class HelloWord extends HTMLElement{
+    constructor(){
+      super()
+      const webcomNode = document.querySelector('#hello-world').content.cloneNode(true)
+      this.attachShadow({mode:'open'}).appendChild( webcomNode )
+    }
+  }
+  (()=>{
+    const tagName = 'hello-world'
+    window.addEventListener(
+      'load', function(){customElements.define(tagName,HelloWord)}, false)
+  })()
+</script>

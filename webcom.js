@@ -35,7 +35,6 @@ function parseWecom( element ){
   })
 
   // Recreate element from markUp
-  // qwerty: component is being inserted but script is not being evaluated
   .then(function( texts ){
     let markUpFragment = document.createDocumentFragment()
     let temp = document.createElement('div')
