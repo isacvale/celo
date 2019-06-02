@@ -1,0 +1,24 @@
+{
+  "name": "celo",
+  "version": "1.0.0",
+  "description": "A loader for HTML based web components.",
+  "main": "celo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isacvale/celo.git"
+  },
+  "keywords": [
+    "web",
+    "components",
+    "loader"
+  ],
+  "author": "isacvale",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/isacvale/celo/issues"
+  },
+  "homepage": "https://github.com/isacvale/celo#readme"
+}
