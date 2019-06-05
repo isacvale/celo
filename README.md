@@ -1,5 +1,5 @@
 # Celo
-This is a loader script for web components that were written down in HTML, as they should be! It listens for changes in DOM, and when it detects a custom element, it fetches its markup and inserts it in the DOM. Its name comes from __C__ustom __E__lement __LO__ader and from the fact that good names in NPM are hard to get.
+This is a loader script for web components that were written down in HTML, as they should be! It listens for changes in DOM, and when it detects a custom element, it fetches its markup and inserts it in the DOM. Its name comes from **C**ustom **E**lement **LO**ader and from the fact that good names in NPM are hard to get.
 
 ## How do I use it?
 Celo will autoload the web component for you if your follow the rules:
@@ -31,7 +31,6 @@ Celo has no dependencies, but the non-minified version assumes ES6.
 + The web components, for one. You must create them yourself.
 + It doesn't make your app descriptive, reactive, responsive or progressive. It just allows you to load web components and lets you do your other chores whichever way you see fit.
 + It doesn't cache your components for other visits. Try setting that up with service workers.
-+ It doesn't polyfill your components.
 
 ## And how am I supposed to be writing the components?
 Here's how a "simple-example.html" file could look like (I'm not advocating this is the _right_ way to do it, just stating that it works):
