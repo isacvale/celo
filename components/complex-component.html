@@ -1,0 +1,40 @@
+<template id="complex-component">
+  <p>1st template foo</p>
+  <template>
+    <p>1st template bar</p>
+  </template>
+  <script>
+    "This won't be parsed at first."
+  </script>
+</template>
+
+<script>
+console.log('run c-c 2')
+
+  class ComplexComponent extends HTMLElement{
+    constructor(){
+      super()
+      const el = document.querySelector("#complex-component")
+        .content.cloneNode(true)
+      this.attachShadow({mode:'open'}).appendChild( el )
+    }
+  }
+  customElements.define( 'complex-component',ComplexComponent )
+</script>
+
+<template id="complex-component-extra">
+  <p>2nd template foo</p>
+</template>
+
+<script>
+console.log('Loading extra-component now')
+  class ComplexComponentExtra extends HTMLElement{
+    constructor(){
+      super()
+      const el = document.querySelector("#complex-component-extra")
+        .content.cloneNode(true)
+      this.attachShadow({mode:'open'}).appendChild( el )
+    }
+  }
+  customElements.define( 'complex-component-extra',ComplexComponentExtra )
+</script>

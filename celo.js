@@ -1,5 +1,8 @@
 (function(){
 
+  // Where components are located
+  let folder = '/components'
+
   // A list to keep track of loaded components, so we don't fetch them twice.
   const loadedComponents = []
 
@@ -21,11 +24,17 @@
 
         if( tagName == "body" )
           setUpContainer()
-        else if( tagName.includes('-') && isNew( tagName )){
-          getMarkUp( tagName )
-          .then( markUp => splitMarkup( markUp ))
-          .then( markUpSplit => recreateElements( markUpSplit ))
-          .then( elementList => addMarkUp( elementList ))
+
+        if( tagName.includes('-') ){
+
+          if( isNew( tagName ) ){
+            markDefined(tagName)
+            getMarkUp( tagName )
+              .then( markUp => splitMarkup( markUp ))
+              .then( markUpSplit => recreateElements( markUpSplit ))
+              .then( elementList => addMarkUp( elementList ))
+
+          }
         }
       }
     })
@@ -41,29 +50,42 @@
   // Checks if component hasn't been loaded yet.
   function isNew( tagName ){
     tagName = tagName.toLowerCase()
-    return loadedComponents.includes( tagName )
-      ? false
-      : loadedComponents.push( tagName )
+    return !loadedComponents.includes( tagName )
+  }
+
+  // Make a note of loaded web component
+  function markDefined( tagName ){
+    loadedComponents.push( tagName )
   }
 
   // Fetches the needed markup from the server
   function getMarkUp( tagName ){
-    return fetch(`/components/${ tagName }.html`)
+    return fetch(`${folder}/${ tagName }.html`)
     .then( res => {
-      if( !res.ok )
-        console.error(`Component <${ tagName }> not found.`)
+      if( !res.ok ){
+        console.warn(`Component <${ tagName }> not found. Is it a subcomponent?`)
+        return false
+      }
       else {
         return res.text()
       }
     })
   }
 
-  // Splits the markup between pure markup and code, which needs to be parsed differently
   function splitMarkup( markUp ){
-    let matches = markUp.match(/<script[\S\s]*?>([\S\s]*?)<\/script>/i)
-    let markUpText = markUp.replace(matches[0],"")
-    let scriptText = matches[1]
-    return {markUp:markUpText,script:scriptText}
+    if(!markUp) return {markUp:"",script:""}
+
+    let textMarkup = markUp
+    let textScript = ""
+
+    let scriptRegex = /<script[\S\s]*?>([\S\s]*?)<\/script>/gi
+    let matchScript
+    while( matchScript = scriptRegex.exec(markUp) ){
+      textMarkup = textMarkup.replace( matchScript[0],"" )
+      textScript += matchScript[1]
+    }
+
+    return {markUp:textMarkup,script:textScript}
   }
 
   // Parse the markep and code by turning them into fragments
@@ -86,6 +108,12 @@
     elementList.forEach( el => container.append(el) )
   }
 
+  // Extend cusdtomElements.define to keep synchrounous tag on the custom elements
+  let originalCustomElementDefinition = customElements.define
+  customElements.define = function(){
+    loadedComponents.push( arguments[0] )
+    return originalCustomElementDefinition.apply( customElements, arguments )
+  }
   setUpObserver()
 
 }())

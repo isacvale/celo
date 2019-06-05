@@ -1,0 +1,112 @@
+<template id="button-dice">
+  <div class="button-dice-container">
+    <output>6</output>
+  </div>
+
+  <style>
+    .button-dice-container{
+      /* border-radius: 9px;200    bbnnpp-00--ṕ=0-==
+  456+/
+  [20/-*\/+    border:
+      4+0ç6
+      kpçḉ   */
+      background-color: darkred;
+      background: linear-gradient(149deg, rgba(133,22,22,1) 0%, rgba(198,75,75,1) 0%, rgba(92,2,2,1) 100%);
+      border-radius: 16px;
+      border: 8px solid antiquewhite;
+      box-shadow: 2px 4px 4px hsla(0, 0%, 0%, 0.4);
+      color: white;
+      cursor: pointer;
+      height: 90px;
+      position: relative;
+      width: 90px;
+    }
+    .button-dice-container output{
+      display: inline-block;
+      font-family: sans-serif;
+      font-size: 64px;
+      font-weight: 700;
+      margin-top: 8px;
+      text-align: center;
+      text-shadow: 2px 4px 4px hsla(0, 0%, 0%, 0.4);
+      user-select: none;
+      width: 100%;
+    }
+    .roll-anim{
+      animation-name: roll-dice;
+      animation-duration: 0.6s;
+      transform-origin: center bottom;
+    }
+    @keyframes roll-dice{
+      0%,
+      20%,
+      53%,
+      80%,
+      100%  {
+        transform: translate3d( 0,0,0 );
+      }
+      40%,
+      43% {
+        transform: translate3d( 0,-20px,0 );
+      }
+      70% {
+        transform: translate3d( 0,-10px,0 );
+      }
+      90% {
+        transform: translate3d( 0,-2px,0 );
+      }
+    }
+  </style>
+</template>
+
+<script>
+  class ButtonDice extends HTMLElement{
+    constructor(){
+      super()
+      const elNode = document.querySelector('#button-dice')
+        .content.cloneNode(true)
+      this.attachShadow({mode:'open'}).appendChild( elNode )
+    }
+    connectedCallback(){
+      if(!this.hasAttribute('max'))
+        this.setAttribute('max',6)
+      if(!this.hasAttribute('min'))
+        this.setAttribute('min',1)
+      this.addEventListener('click', this.buttonClick)
+    }
+    disconnectedCallback(){
+      this.removeEventListener('click', this.buttonClick)
+    }
+    get max(){
+      return this.getAttribute('max')
+    }
+    set max( value ){
+      return this.setAttribute('max', value)
+    }
+    get min(){
+      return this.getAttribute('min')
+    }
+    set min( value ){
+      return this.setAttribute('min', value)
+    }
+    buttonClick( e ){
+      let output = this.shadowRoot.querySelector('output')
+      let randomValue =  Math.floor( Math.random()*this.max ) + +this.min
+      setTimeout( function(){
+        output.innerHTML = randomValue
+      }, 350 )
+
+      let container = this.shadowRoot.querySelector(".button-dice-container")
+      container.classList.remove("roll-anim")
+      setTimeout( function(){
+        container.classList.add("roll-anim")
+      }, 0 )
+
+    }
+  }
+  window.addEventListener('load', function(){
+    customElements.define(
+      'button-dice', ButtonDice
+    )}
+  )
+</script>

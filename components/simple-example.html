@@ -1,0 +1,22 @@
+<template id="tpl-simple-example">
+  <div>
+    <p>This is a demo web component.</p>
+  </div>
+  <style>
+    p{
+      padding: 5px 10px;
+      background-color: antiquewhite;
+    }
+  </style>
+</template>
+<script>
+  class SimpleExample extends HTMLElement{
+    constructor(){
+      super()
+      const el = document.querySelector("#tpl-simple-example")
+                          .content.cloneNode(true)
+      this.attachShadow({mode:'open'}).appendChild( el )
+    }
+  }
+  customElements.define( 'simple-example',SimpleExample )
+</script>
