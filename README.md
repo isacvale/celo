@@ -1,5 +1,5 @@
 # Celo
-This is a loader script for web components that were written down in HTML, as they should be! It listens for changes in DOM, and when it detects a custom element, it fetches its markup and inserts it in the DOM. Its name comes from __C__ustom __E__lement __LO__ader and from the fact that good names in NPM are hard to get.
+This is a loader script for web components that were written down in HTML, as they should be! It listens for changes in DOM, and when it detects a custom element, it fetches its markup and inserts it in the DOM. Its name comes from **C**ustom **E**lement **LO**ader and from the fact that good names in NPM are hard to get.
 
 ## How do I use it?
 Celo will autoload the web component for you if your follow the rules:
@@ -36,25 +36,28 @@ Celo has no dependencies, but the non-minified version assumes ES6.
 ## And how am I supposed to be writing the components?
 Here's how a "simple-example.html" file could look like (I'm not advocating this is the _right_ way to do it, just stating that it works):
 
+```
   <template id="tpl-simple-example">
-    &nbsp;&nbsp;&nbsp;&nbsp;<div>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p>This is a demo web component.</p>
-    &nbsp;&nbsp;&nbsp;&nbsp;</div>
-    &nbsp;&nbsp;&nbsp;&nbsp;<style>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p{
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;padding: 5px 10px;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background-color: antiquewhite;
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-    &nbsp;&nbsp;&nbsp;&nbsp;</style>
+    <div>
+      <p>This is a demo web component.</p>
+    </div>
+    <style>
+      p{
+        padding: 5px 10px;
+        background-color: antiquewhite;
+      }
+    </style>
   </template>
+  
   <script>
-    &nbsp;&nbsp;&nbsp;&nbsp;class SimpleExample extends HTMLElement{
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;constructor(){
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super()
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const el = document.querySelector("#tpl-simple-example")
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.content.cloneNode(true)
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.attachShadow({mode:'open'}).appendChild( el )
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-    &nbsp;&nbsp;&nbsp;&nbsp;}
-    &nbsp;&nbsp;&nbsp;&nbsp;customElements.define( 'simple-example',SimpleExample )
+    class SimpleExample extends HTMLElement{
+      constructor(){
+        super()
+        const el = document.querySelector("#tpl-simple-example")
+                            .content.cloneNode(true)
+        this.attachShadow({mode:'open'}).appendChild( el )
+      }
+    }
+    customElements.define( 'simple-example',SimpleExample )
   </script>
+```
