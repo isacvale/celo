@@ -30,10 +30,9 @@
           if( isNew( tagName ) ){
             markDefined(tagName)
             getMarkUp( tagName )
-              .then( markUp => splitMarkup( markUp ))
-              .then( markUpSplit => recreateElements( markUpSplit ))
-              .then( elementList => addMarkUp( elementList ))
-
+              .then( markUp => injectMarkup( markUp ))
+              .then( frag => recreateScripts( frag ))
+              .then( frag => addToDOM( frag ))
           }
         }
       }
@@ -72,40 +71,34 @@
     })
   }
 
-  function splitMarkup( markUp ){
-    if(!markUp) return {markUp:"",script:""}
-
-    let textMarkup = markUp
-    let textScript = ""
-
-    let scriptRegex = /<script[\S\s]*?>([\S\s]*?)<\/script>/gi
-    let matchScript
-    while( matchScript = scriptRegex.exec(markUp) ){
-      textMarkup = textMarkup.replace( matchScript[0],"" )
-      textScript += matchScript[1]
-    }
-
-    return {markUp:textMarkup,script:textScript}
-  }
-
-  // Parse the markep and code by turning them into fragments
-  function recreateElements( markUpSplit ){
+  // Append the html text to a DOM element. This will parse the element, but
+  // the scripts won't run.
+  function injectMarkup( markUp ){
     let markUpFragment = document.createDocumentFragment()
-
-    let temp = document.createElement('div')
-    temp.innerHTML = markUpSplit.markUp
-    while(temp.firstChild) markUpFragment.appendChild(temp.firstChild)
-
-    let scriptElement = document.createElement('script')
-    scriptElement.appendChild(document.createTextNode(markUpSplit.script))
-
-    return [ markUpFragment, scriptElement ]
+    let container = document.createElement('div')
+    container.innerHTML = markUp
+    while( container.firstChild ) markUpFragment.appendChild( container.firstChild )
+    return markUpFragment
   }
 
-  // Adds fragments to the DOM
-  function addMarkUp( elementList ){
-    let container = document.querySelector("#_celo")
-    elementList.forEach( el => container.append(el) )
+  // Oftentimes scripts are inserted/cloned with an "already started" flag on,
+  // so they just don't run. To deal with that, we recreate them as new
+  // elements.
+  function recreateScripts( element ){
+    element.querySelectorAll( 'script' ).forEach( script => {
+      let scriptElement = document.createElement( 'script' )
+      scriptElement.appendChild(document.createTextNode(script.innerHTML))
+      let container = script.parentElement || element
+      container.appendChild( scriptElement )
+      container.removeChild( script )
+    })
+    return element
+  }
+
+  // Adds the component to the DOM
+  function addToDOM( fragment ){
+    const celo = document.querySelector("#_celo")
+    celo.append( fragment )
   }
 
   // Extend cusdtomElements.define to keep synchrounous tag on the custom elements
