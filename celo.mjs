@@ -1,7 +1,8 @@
-(function(){
+export default (function(){
 
-  // Where components are located
-  let folder = '/components'
+  // Customization variables
+  const componentsPath = '/components'
+  const containerId = '_celo'
 
   // A list to keep track of loaded components, so we don't fetch them twice.
   const loadedComponents = []
@@ -10,70 +11,75 @@
   function setUpObserver(){
     const observer = new MutationObserver( parseElements )
     observer.observe( document, {childList: true, subtree: true} )
-    return this
+    return observer
   }
+
 
   // If the element is <body>, set up a container and cache. If it has a hyphen,
   // then its a custom: we must fetch it if we don't have done it already.
   function parseElements( elementList ){
+
     elementList.forEach( el => {
       el = el.addedNodes[0]
 
-      if( el instanceof HTMLElement && el.tagName ){
-        let tagName = el.tagName.toLowerCase()
+      if( !el ||
+          !el instanceof HTMLElement ||
+          !el.tagName ||
+          !el.tagName.includes('-') ||
+          !isNew( el.tagName ))
+        return false
 
-        if( tagName == "body" )
-          setUpContainer()
+      const tagName = el.tagName.toLowerCase()
 
-        if( tagName.includes('-') ){
-
-          if( isNew( tagName ) ){
-            markDefined(tagName)
-            getMarkUp( tagName )
-              .then( markUp => injectMarkup( markUp ))
-              .then( frag => recreateScripts( frag ))
-              .then( frag => addToDOM( frag ))
-          }
-        }
-      }
+      setUpContainer()
+      markDefined( tagName )
+      getMarkUp( tagName )
+        .then( markUp => injectMarkup( markUp ))
+        .then( frag => recreateScripts( frag ))
+        .then( frag => addToDOM( frag ))
     })
   }
 
-  // Creates a hidden div to hold components markup
+
+  // A hidden div is needed to hold the components' templates. Let's check if it
+  // exists, and create it if it doesn't.
   function setUpContainer(){
-    let container = document.createElement('div')
-    container.id = "_celo"
-    document.body.appendChild(container)
+    if( !document.querySelector(`#${containerId}`) && document.querySelector('body') ){
+        const container = document.createElement('div')
+        container.id = containerId
+        document.body.appendChild(container)
+      }
   }
+
 
   // Checks if component hasn't been loaded yet.
   function isNew( tagName ){
-    tagName = tagName.toLowerCase()
-    return !loadedComponents.includes( tagName )
+    return !loadedComponents.includes( tagName.toLowerCase() )
   }
+
 
   // Make a note of loaded web component
   function markDefined( tagName ){
     loadedComponents.push( tagName )
   }
 
+
   // Fetches the needed markup from the server
   function getMarkUp( tagName ){
-    return fetch(`${folder}/${ tagName }.html`)
+    return fetch(`${componentsPath}/${ tagName }.html`)
     .then( res => {
-      if( !res.ok ){
+      if( !res.ok )
         console.warn(`Component <${ tagName }> not found. Is it a subcomponent?`)
-        return false
-      }
-      else {
+      else
         return res.text()
-      }
     })
   }
 
   // Append the html text to a DOM element. This will parse the element, but
   // the scripts won't run.
   function injectMarkup( markUp ){
+    if( !markUp ) return false
+
     let markUpFragment = document.createDocumentFragment()
     let container = document.createElement('div')
     container.innerHTML = markUp
@@ -81,10 +87,13 @@
     return markUpFragment
   }
 
+
   // Oftentimes scripts are inserted/cloned with an "already started" flag on,
   // so they just don't run. To deal with that, we recreate them as new
   // elements.
   function recreateScripts( element ){
+    if( !element ) return false
+
     element.querySelectorAll( 'script' ).forEach( script => {
       let scriptElement = document.createElement( 'script' )
       scriptElement.appendChild(document.createTextNode(script.innerHTML))
@@ -95,18 +104,40 @@
     return element
   }
 
+
   // Adds the component to the DOM
   function addToDOM( fragment ){
-    const celo = document.querySelector("#_celo")
-    celo.append( fragment )
+    if( !fragment ) return false
+    document.querySelector(`#${containerId}`).append( fragment )
   }
 
-  // Extend cusdtomElements.define to keep synchrounous tag on the custom elements
-  let originalCustomElementDefinition = customElements.define
+  // Scans elements parsed before the observer was in effect and
+  // reparse them
+  function backSearch(){
+    const elList = Array.from( document.getElementsByTagName("*") )
+                  .filter( el => el.tagName.includes("-"))
+    elList.forEach( el => reparseElement( el ))
+  }
+
+  // Remove an element and attach it to the same position, forcing it to be reparsed.
+  function reparseElement( el ){
+    let parent = el.parentNode
+    let sibling = el.nextSibling
+    el.parentNode.removeChild(el)
+    if( sibling )
+      parent.insertBefore( el, sibling )
+    else
+      parent.appendChild( el )
+  }
+
+  // Extends customElements.define to keep synchrounous tag on the custom elements
+  const originalCustomElementDefinition = customElements.define
   customElements.define = function(){
     loadedComponents.push( arguments[0] )
     return originalCustomElementDefinition.apply( customElements, arguments )
   }
-  setUpObserver()
 
-}())
+  setUpContainer()
+  setUpObserver()
+  backSearch()
+})()
