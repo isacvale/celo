@@ -1,11 +1,13 @@
-export default (function(){
+export default (function (){
 
-  // Customization variables
-  const componentsPath = '/components'
-  const containerId = '_celo'
+  // Defining variables
+  let config = window.celoConfig ? window.celoConfig : {}
+  const componentsPath =  config.componentsPath ? config.componentsPath : "/components"
+  const containerId = config.containerId ? config.containerId : "_celo"
 
   // A list to keep track of loaded components, so we don't fetch them twice.
   const loadedComponents = []
+  
 
   // Sets up an observer that reacts to elements being added to the DOM.
   function setUpObserver(){
@@ -138,6 +140,7 @@ export default (function(){
   }
 
   setUpContainer()
-  setUpObserver()
+  let watcher = setUpObserver()
   backSearch()
+  return watcher
 })()

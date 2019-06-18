@@ -1,6 +1,6 @@
 {
   "name": "celo",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A loader for HTML-based web components.",
   "main": "celo.js",
   "scripts": {
