@@ -1,22 +1,23 @@
 
 # Celo
 This is a loader script for [web components](https://developer.mozilla.org/en-US/docs/Web/Web_Components) that were written down in HTML, as they should be!
-The _**C**ustom **E**lement **LO**ader_, aka Celo, listens for changes in DOM and when it detects a custom element being added, it fetches its markup and inserts it in the document.
+The _**C**ustom **E**lement **LO**ader_, or Celo, listens for changes in DOM and when it detects a custom element being added, it fetches its markup and inserts it in the document.
 
 ## How do I use it?
 Celo will autoload web components for you if your follow the rules:
-+ [Import celo](#settingup), either as an ES6 module or a simple script.
-+ Place your components should be in the root folder "/components" (or change the default location in the [configuration](#configuration)).
-+ Each component's name must be lowercase and match the tag intended. So the "\<my-example>" component will be loaded from the file "my-example.html".
++ [Import celo](#settingup) either as an [ES6 module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) or a simple script.
++ Your components should be in the folder "/components" (or any single folder [set in the configuration](#configuration)).
++ Your components' names must be lowercase and match the tags intended. So the "\<my-example>" component will be loaded from the file "my-example.html".
 
 ## And how does it work?
-Celo uses a [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to listen for any element inserted in the DOM that carries a hyphen (ie. a custom element). Upon detection, if it hasn't done it already, it fetches the markup and add its code to a hidden \<div> with an id of "\_celo".
-Any custom element already parsed when Celo is called in is then reinserted  into the DOM to be reparsed.
+Celo uses a [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to listen for any element inserted in the DOM that carries a hyphen (ie. a custom element). Upon detection, if it hasn't done so already, it fetches the markup and add its code to a hidden \<div> with an id of "\_celo" (also [configurable](#configuration)).
+Any custom element already parsed when Celo is called in is reinserted into the DOM so they can be reparsed.
 
 ## Requirements
 Celo has no dependencies, but the non-minified version assumes ES6.
+
 ## <a name="settingup"></a>Setting up
-Celo comes in two flavours: the preferred one is an EcmaScript 6 Module, but you can also just import it as a simple script. Either way, Celo is an [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE). It will execute automatically, won't pollute your global namespace and it returns the Mutation Observer, but you most likely won't need to keep a reference to it.
+Celo comes in two flavours: the preferred one is as an EcmaScript 6 Module, but you can also just import it as a simple script. Either way, Celo is an [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE). It will execute automatically, won't pollute your global namespace and it does returns the Mutation Observer, but you most likely don't need to keep a reference to it.
 ### ES6 Module (4.7kB)
 ```
 <script type="module">
@@ -27,38 +28,39 @@ In case you want a fallback, you can run the minified ES5 version with a _nomodu
 ```
 <script nomodule src="/celo.min.js"></script>
 ```
-### Simple ES5 Script (1.9 kB)
+### Simple ES5 Script (2.0 kB)
 ```
 <script src="/celo.min.js"></script>
 ```
-### <a name="configuration">Configuration
-To configure Celo you must create a global variable called _celoConfig_. Its "componentsPath" property determines the path you want to keep your components' HTML. The "containerId" property determines the id of the div that will receive the web components' templates. It is usually declared on a \<script> tag of its own just before importing Celo. In the example below, please note the use of "var" instead of "let" or "const".
+
+## Useful information
+
+### Backward compatibility
+Prior to version 1.1.0, Celo was _not_ an ES6 Module. If you are updating from it, be sure to double check the setup.
+
+### <a name="configuration"></a>Configuration
+You don't need to configure anything - the defaults are most likely fine.
+
+But if you want to, you can set the path of the folder your components are in, and the id of the \<div> that will contain the templates. You do that by creating a global variable named "_celoConfig_" that can contain either or both of these properties: "componentsPath" and "containerId". The example below shows a simple way to configure Celo, but be sure to do it in a separate \<script> tag and use "var" instead or let or const.
 ```
 <script>var celoConfig = { containerId: "_customId" }</script>
 ```
 
-## The fineprint you ought to know
+### Subcomponents
+Each web component should be its own HTML file. If you want multiple components in a single HTML, make sure it's one main component and its _subcomponents_. Basically a subcomponent is:
 
-### Backward compatibility
-Starting at version 1.1.0, Celo is an ES6 module. Because those are asynchronous, Celo has to retroactively address all components already parsed by the time it is loaded. On the plus side, it doesn't need to be imported in the \<head> anymore. If your app used Celo prior to 1.1.0 and you want to update, please double check how it is being called.
-
-### A word about subcomponents
-Usually, each web component has its own HTML file. If you want to have multiple components in a single HTML, it should be a single main component and its _subcomponents_. Think of a subcomponent as:
-
-+ being dynamically added by the main component;
++ dynamically added by the main component;
 + not suitable to be added as a standalone component; and
 + not intended to be reused by other main components.
 
-Subcomponents are separated from their masters just for clarity. If you add the subcomponent tag directly to your HTML, Celo will try to load it from a file matching its tagName, resulting in a non-fatal error.
+If you add the subcomponent tag directly to your HTML, Celo will try to load it from a file matching its tagName, resulting in a non-fatal error.
 
-### A word about \<script> tags
-Any \<script> tag you include in the root of yout HTML file will be executed right away. That's typically not the case if your \<script> tags are inside \<template> tags. That's because web components typically use the _cloneNode()_ function which flags the scripts as being already executed. Please note that:
+### About \<script> tags
+Any top level \<script> tags in your component's HTML file will be executed right away. _But \<script> tags inside \<template> tags are (typically) not._ That's because web components (typically) use the _cloneNode()_ function, which flags the scripts as "already executed". Please note that:
 
-+ You probably don't need to include \<script> tags inside the [shadowRoot](https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot);
++ You don't need to include \<script> tags inside the [shadowRoot](https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot).;
 + Even if you do include it in the shadowRoot, _the script won't be scoped_;
-+ But if you do need (want) to do it,  its is an issue to be dealt with in the web component itself, it's not up to Celo.
-
-If you _must_ for some reason have the \<script> execute from within the shadowRoot, you can check out Celo's _recreateScripts()_ function for a reference on how to do it. But, again, you would be much better off handling your scripts in the component's _class_ definition.
++ And if you _want_ to do it for some reason, that's an issue for to fix in the web component itself. Celo's _recreateScripts()_ function could give you a tip on how to make the script self-executable, though.
 
 ### What Celo doesn't do for you
 + It doesn't make your app descriptive, reactive, responsive or progressive. It just allows you to load web components and lets you do your other chores whichever way you see fit.
@@ -66,9 +68,7 @@ If you _must_ for some reason have the \<script> execute from within the shadowR
 + It doesn't polyfill your components.
 
 ## And how am I supposed to be writing the components?
-Below you will find how a "simple-example.html" file could look like (I'm not advocating this is the _right_ way to do it, just stating that it works). It has two root elements: a \<template> and a \<script>. All the markup goes into the \<template>, including any \<style>.
-
-Note that \<script> is outside \<template> so it will run as soon as the component is fetched. It also means the code won't be inside the shadowRoot -- I would recommend placing all needed code inside the class definition and leave the \<template> clear of code.
+Below you will find how a "simple-example.html" file could look like (it's not the "_right_" way to do it, but it's a way that works). Basically, you've got two top level tags: a \<template> and a \<script>. All the markup goes into the \<template>, including any \<style>, and it's best to avoid adding extra \<script> tags inside \<template>.
 
 ```
   <template id="tpl-simple-example">
