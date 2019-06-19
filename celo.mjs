@@ -7,7 +7,7 @@ export default (function (){
 
   // A list to keep track of loaded components, so we don't fetch them twice.
   const loadedComponents = []
-  
+
 
   // Sets up an observer that reacts to elements being added to the DOM.
   function setUpObserver(){
@@ -19,10 +19,17 @@ export default (function (){
 
   // If the element is <body>, set up a container and cache. If it has a hyphen,
   // then its a custom: we must fetch it if we don't have done it already.
+  // This is a recurssive function, so it will allow deeply parsing (necessary
+  // for use in React).
   function parseElements( elementList ){
 
     elementList.forEach( el => {
-      el = el.addedNodes[0]
+
+      if(el.addedNodes)
+        el = el.addedNodes[0]
+
+      if(el.hasChildNodes())
+        parseElements( el.childNodes )
 
       if( !el ||
           !el instanceof HTMLElement ||

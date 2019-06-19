@@ -17,7 +17,7 @@ Any custom element already parsed when Celo is called in is then reinserted  int
 Celo has no dependencies, but the non-minified version assumes ES6.
 ## <a name="settingup"></a>Setting up
 Celo comes in two flavours: the preferred one is an EcmaScript 6 Module, but you can also just import it as a simple script. Either way, Celo is an [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE). It will execute automatically, won't pollute your global namespace and it returns the Mutation Observer, but you most likely won't need to keep a reference to it.
-### ES6 Module (4.5kB)
+### ES6 Module (4.7kB)
 ```
 <script type="module">
 	import '/celo.mjs'
@@ -27,13 +27,12 @@ In case you want a fallback, you can run the minified ES5 version with a _nomodu
 ```
 <script nomodule src="/celo.min.js"></script>
 ```
-Either way, celo is just an  -- it won't pollute the global namespace, but it won't return you anything. You're just meant to unleash it.
-### Simple ES5 Script
+### Simple ES5 Script (1.9 kB)
 ```
 <script src="/celo.min.js"></script>
 ```
 ### <a name="configuration">Configuration
-To configure Celo you must create a global variable called celoConfig. Its "componentsPath" property determines the path you want to keep your components' HTML. The "containerId" property determines the id of the div that will receive the web components' templates. It is usually declared on a \<script> tag of its own just before importing Celo. In the example below, please note the use of "var" instead of "let" or "const".
+To configure Celo you must create a global variable called _celoConfig_. Its "componentsPath" property determines the path you want to keep your components' HTML. The "containerId" property determines the id of the div that will receive the web components' templates. It is usually declared on a \<script> tag of its own just before importing Celo. In the example below, please note the use of "var" instead of "let" or "const".
 ```
 <script>var celoConfig = { containerId: "_customId" }</script>
 ```
@@ -41,7 +40,7 @@ To configure Celo you must create a global variable called celoConfig. Its "comp
 ## The fineprint you ought to know
 
 ### Backward compatibility
-Starting at version 1.1.0, Celo is an ES6 module. Because those a asynchronous, Celo has to retroactively address all components already parsed by the time it is loaded. On the plus side, it doesn't need to be imported in the \<head> anymore. If your app used Celo prior to 1.1.0 and you want to update, please double check how it is being called.
+Starting at version 1.1.0, Celo is an ES6 module. Because those are asynchronous, Celo has to retroactively address all components already parsed by the time it is loaded. On the plus side, it doesn't need to be imported in the \<head> anymore. If your app used Celo prior to 1.1.0 and you want to update, please double check how it is being called.
 
 ### A word about subcomponents
 Usually, each web component has its own HTML file. If you want to have multiple components in a single HTML, it should be a single main component and its _subcomponents_. Think of a subcomponent as:
