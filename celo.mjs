@@ -28,15 +28,16 @@ export default (function (){
       if(el.addedNodes)
         el = el.addedNodes[0]
 
-      if(el.hasChildNodes())
-        parseElements( el.childNodes )
-
       if( !el ||
           !el instanceof HTMLElement ||
           !el.tagName ||
           !el.tagName.includes('-') ||
           !isNew( el.tagName ))
         return false
+
+
+      if(el.hasChildNodes())
+        parseElements( el.childNodes )
 
       const tagName = el.tagName.toLowerCase()
 
