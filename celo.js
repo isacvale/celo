@@ -1,4 +1,4 @@
-export default (function (){
+(function (){
 
   // Defining variables
   let config = window.celoConfig ? window.celoConfig : {}
@@ -107,14 +107,6 @@ export default (function (){
     document.querySelector(`#${containerId}`).append( fragment )
   }
 
-  // Scans elements parsed before the observer was in effect and
-  // reparse them
-  function backSearch(){
-    const elList = Array.from( document.getElementsByTagName("*") )
-                  .filter( el => el.tagName.includes("-"))
-    elList.forEach( el => reparseElement( el ))
-  }
-
   // Remove an element and attach it to the same position, forcing it to be reparsed.
   function reparseElement( el ){
     let parent = el.parentNode
@@ -135,6 +127,5 @@ export default (function (){
 
   setUpContainer()
   let watcher = setUpObserver()
-  backSearch()
   return watcher
 })()
