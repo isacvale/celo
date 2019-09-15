@@ -66,6 +66,7 @@
       const elNode = document.querySelector('#button-dice')
         .content.cloneNode(true)
       this.attachShadow({mode:'open'}).appendChild( elNode )
+      console.log('me, me')
     }
     connectedCallback(){
       if(!this.hasAttribute('max'))

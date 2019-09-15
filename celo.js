@@ -1,3 +1,4 @@
+/* Basically the same as the mjs, except no backSearch() and no export default */
 (function (){
 
   // Defining variables
@@ -9,9 +10,9 @@
   const loadedComponents = []
 
   // Sets up an observer that reacts to elements being added to the DOM.
-  function setUpObserver(){
-    const observer = new MutationObserver( parseElements )
-    observer.observe( document, {childList: true, subtree: true} )
+  function setUpObserver () {
+    const observer = new MutationObserver(parseElements)
+    observer.observe(document, { childList: true, subtree: true })
     return observer
   }
 
@@ -19,32 +20,29 @@
   // then its a custom: we must fetch it if we don't have done it already.
   // This is a recursive function, so it will allow deeply parsing (necessary
   // for use in React).
-  function parseElements( elementList ){
-
-    elementList.forEach( el => {
-      if( el.addedNodes )
-        el = el.addedNodes[0]
-      if( el instanceof HTMLElement )
-        parseElements( el.childNodes )
-      else
-        return false
-      if( !el.tagName.includes('-'))
-        return false
+  function parseElements (elementList) {
+    elementList.forEach(el => {
+      if (el.addedNodes) el = el.addedNodes[0]
+      if (el instanceof HTMLElement) parseElements( el.childNodes )
+      else return false
+      if( !el.tagName.includes('-')) return false
 
       const tagName = el.tagName.toLowerCase()
+      if( loadedComponents.includes(tagName)) return
 
       setUpContainer()
-      markDefined( tagName )
-      getMarkUp( tagName )
-        .then( markUp => injectMarkup( markUp ))
-        .then( frag => recreateScripts( frag ))
-        .then( frag => addToDOM( frag ))
+      markDefined(tagName)
+      getMarkUp(tagName)
+        .then(markUp => injectMarkup(markUp))
+        .then(frag => recreateScripts(frag))
+        .then(frag => addToDOM(frag))
+        .then(() => el.shadowRoot && parseElements(el.shadowRoot.childNodes))
     })
   }
 
   // A hidden div is needed to hold the components' templates. Let's check if it
   // exists, and create it if it doesn't.
-  function setUpContainer(){
+  function setUpContainer () {
     if( !document.querySelector(`#${containerId}`) && document.querySelector('body') ){
         const container = document.createElement('div')
         container.id = containerId
