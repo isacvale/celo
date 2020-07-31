@@ -16,31 +16,31 @@ Celo uses a [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/
 Celo has no dependencies, but the non-minified version assumes ES6.
 
 ## <a name="settingup"></a>Setting up
-Celo comes in two flavours: you can import it as an ES6 Module or as a simple script. In either way, Celo is an [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE). It will execute automatically, won't pollute your global namespace and though it returns the Mutation Observer, but you most likely don't need to keep a reference to it.
+Celo comes in two flavours: you can import it as an ES6 Module or as a simple script. In either way, Celo is an [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE). It will execute automatically, won't pollute your global namespace and though it returns the Mutation Observer, you most likely don't need to keep a reference to it.
 
-The difference is that importing a script will block the HTML parser, while ES6 Modules are deferred by default, allowing your page to show the appearance quick ans then (quite quickly) load the interactivity. That is a great idea.
+The difference is that importing a script will block the HTML parser, while ES6 Modules are deferred by default, allowing your page to show the appearance quickly and then (quite quickly) load the interactivity. That is a great idea.
 
 But Celo is the kind of thing you'd _want_ to block the parser! As an ES6 Module, Celo will only be fired after the DOM is parsed, so it'll loop through all elements in your page and reinsert custom elements to be reparsed. Yikes! That means your page _will_ blink without the components, before inserting them half a second later.
 
 Importing it directly as a script would do the opposite, loading Celo and the components as they are needed, so your page is loaded in one go. The delay is usually minor, and there's no blink. This is currently the preferred method for loading Celo (even is modules do usually rock!).
 
 ### ES6 Module (4.6kB)
-```
+```html
 <script type="module">
 	import '/celo.mjs'
 </script>
 ```
 In case you want a fallback, you can run the minified ES5 version with a _nomodule_ attribute:
-```
+```html
 <script nomodule src="/celo.min.js"></script>
 ```
 ### Simple ES5 Script (4.3/1.6 kB)
-```
+```html
 <script src="/celo.js"></script>
 ```
 or
 
-```
+```html
 <script src="/celo.min.js"></script>
 ```
 The script version is transpiled to work under ES5.
@@ -54,7 +54,7 @@ Methods of loading celo have changed slightly in recent version. Make sure to ch
 You don't need to configure anything - the defaults are most likely fine.
 
 But if you want to, you can set the path of the folder your components are in, and the id of the \<div> that will contain the templates. You do that by creating a global variable named "_celoConfig_" that can contain either or both of these properties: "componentsPath" and "containerId". The example below shows a simple way to configure Celo, but be sure to do it in a separate \<script> tag and use "var" instead or let or const.
-```
+```html
 <script>var celoConfig = { containerId: "_customId" }</script>
 ```
 
