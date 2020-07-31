@@ -82,7 +82,7 @@ Any top level \<script> tags in your component's HTML file will be executed righ
 ## And how am I supposed to be writing the components?
 Below you will find how a "simple-example.html" file could look like (it's not the "_right_" way to do it, but it's a way that works). Basically, you've got two top level tags: a \<template> and a \<script>. All the markup goes into the \<template>, including any \<style>, and it's best to avoid adding extra \<script> tags inside \<template>.
 
-```
+```html
   <template id="tpl-simple-example">
     <div>
       <p>This is a demo web component.</p>
